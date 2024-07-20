@@ -1,5 +1,5 @@
 # Class-File-Searcher
-Dump Class-files & Strings from arbitrary data
+Command-line tool for dumping Class-files & Strings from arbitrary data
 
 ## How To Install
 + [Download the latest release for your platform](https://github.com/Konloch/Class-File-Searcher/releases/latest)
