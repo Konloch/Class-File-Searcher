@@ -4,3 +4,9 @@
 *.bat
 
 dependency-reduced-pom.xml
+cfs.build_artifacts.txt
+build.exe.bat
+build.exe.init.bat
+build.exe.post.bat
+cfs.jar
+cfs.exe
