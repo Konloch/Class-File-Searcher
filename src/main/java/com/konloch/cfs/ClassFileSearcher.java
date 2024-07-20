@@ -190,15 +190,15 @@ public class ClassFileSearcher
 			if (className.length() >= PATH_LIMIT)
 				className = className.substring(PATH_LIMIT - 30);
 			
-			File parent = new File(packageName);
-			parent.mkdirs();
-			
 			if (verbose)
 				System.out.println("Found: " + classFile.classFile + (classFile.superClass.equals("java.lang.Object") ? "" : " extends " + classFile.superClass));
 			
 			//write to disk
 			if (dumpFoundFiles)
 			{
+				File parent = new File(packageName);
+				parent.mkdirs();
+				
 				File file = new File(parent, className + ".class");
 				
 				//rename file to something new to prevent collisions
@@ -216,6 +216,9 @@ public class ClassFileSearcher
 			
 			if (dumpFoundStrings)
 			{
+				File parent = new File(packageName);
+				parent.mkdirs();
+				
 				File file = new File(parent, className + "-Strings.txt");
 				
 				//rename file to something new to prevent collisions
