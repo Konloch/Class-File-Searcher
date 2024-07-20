@@ -1,6 +1,8 @@
 # Class-File-Searcher
 Command-line tool for dumping Class-files & Strings from arbitrary data
 
+![Screenshot-1](./.github/screenshot-1.gif)
+
 ## How To Install
 + [Download the latest release for your platform](https://github.com/Konloch/Class-File-Searcher/releases/latest)
 + Add the binary to your system-path
