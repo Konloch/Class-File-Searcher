@@ -3,6 +3,7 @@ package com.konloch.cfs;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -29,19 +30,23 @@ public class ClassFileSearcher
 		
 		String command = args[0];
 		String[] inputs = Arrays.copyOfRange(args, 1, args.length);
+		int totalFound;
 		
 		switch (command)
 		{
 			case "count":
-				countClassFiles(inputs);
+				totalFound = searchForClasses(inputs, false, false);
+				System.out.println("Found " + totalFound + " valid classes");
 				break;
 				
 			case "classes":
-				dumpClassFiles(inputs);
+				totalFound = searchForClasses(inputs, true, false);
+				System.out.println("Found & extracted " + totalFound + " valid classes");
 				break;
 				
 			case "strings":
-				dumpStrings(inputs);
+				totalFound = searchForClasses(inputs, false, true);
+				System.out.println("Found & extracted strings from " + totalFound + " valid classes");
 				break;
 				
 			default:
@@ -50,7 +55,7 @@ public class ClassFileSearcher
 		}
 	}
 	
-	private static void countClassFiles(String[] inputs) throws IOException
+	private static int searchForClasses(String[] inputs, boolean dumpFoundFile, boolean dumpFoundStrings) throws IOException
 	{
 		int totalFound = 0;
 		for (String input : inputs)
@@ -62,57 +67,23 @@ public class ClassFileSearcher
 				File[] files = file.listFiles();
 				if (files != null)
 					for (File f : files)
-						totalFound += extractClassFilesFromFile(f, false, false);
+						totalFound += extractClassFilesFromFile(f, dumpFoundFile, dumpFoundStrings);
 			}
+			else if(file.exists())
+				totalFound += extractClassFilesFromFile(file, dumpFoundFile, dumpFoundStrings);
 			else
 			{
-				totalFound += extractClassFilesFromFile(file, false, false);
+				Path currentDir = Paths.get("");
+				try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir))
+				{
+					for (Path path : stream)
+						if(isMatch(path, input))
+							totalFound += extractClassFilesFromFile(path.toFile(), dumpFoundFile, dumpFoundStrings);
+				}
 			}
 		}
 		
-		System.out.println("Found " + totalFound + " valid classes");
-	}
-	
-	private static void dumpClassFiles(String[] inputs) throws IOException
-	{
-		int totalFound = 0;
-		for (String input : inputs)
-		{
-			File file = new File(input);
-			
-			if (file.isDirectory())
-			{
-				File[] files = file.listFiles();
-				if (files != null)
-					for (File f : files)
-						totalFound += extractClassFilesFromFile(f, true, false);
-			}
-			else
-				totalFound += extractClassFilesFromFile(file, true, false);
-		}
-		
-		System.out.println("Found & extracted " + totalFound + " valid classes");
-	}
-	
-	private static void dumpStrings(String[] inputs) throws IOException
-	{
-		int totalFound = 0;
-		for (String input : inputs)
-		{
-			File file = new File(input);
-			
-			if (file.isDirectory())
-			{
-				File[] files = file.listFiles();
-				if (files != null)
-					for (File f : files)
-						totalFound += extractClassFilesFromFile(f, false, true);
-			}
-			else
-				totalFound += extractClassFilesFromFile(file, false, true);
-		}
-		
-		System.out.println("Found & extracted strings from " + totalFound + " valid classes");
+		return totalFound;
 	}
 	
 	public static int extractClassFilesFromFile(File file, boolean dumpFoundFiles, boolean dumpFoundStrings) throws IOException
@@ -121,7 +92,7 @@ public class ClassFileSearcher
 		byte[] buffer = new byte[1024];
 		int bytesRead;
 		
-		int classCount = 1;
+		int classCount = 0;
 		boolean inClass = false;
 		ByteArrayOutputStream classBuffer = new ByteArrayOutputStream();
 		
@@ -332,5 +303,11 @@ public class ClassFileSearcher
 			//return the read class file
 			return new ReadClassFile(className, superClassName, constantPool);
 		}
+	}
+	
+	private static boolean isMatch(Path path, String pattern)
+	{
+		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+		return matcher.matches(path);
 	}
 }
