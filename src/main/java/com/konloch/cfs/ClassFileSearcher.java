@@ -65,7 +65,9 @@ public class ClassFileSearcher
 						totalFound += extractClassFilesFromFile(f, false, false);
 			}
 			else
+			{
 				totalFound += extractClassFilesFromFile(file, false, false);
+			}
 		}
 		
 		System.out.println("Found " + totalFound + " valid classes");
