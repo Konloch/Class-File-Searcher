@@ -30,3 +30,6 @@ Command-line tool for dumping Class-files & Strings from arbitrary data
   + It's uncompressed data
   + It's not lying to us when it says 'CAFEBABE'
   + The files are stored back to back, I.E. each chunk of 'CAFEBABE' represents another class once reached.
+
+## Notes
++ We're resistant to most obfuscation, but if you find something that breaks CFS feel free to report the issue.
