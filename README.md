@@ -1,4 +1,4 @@
-# ClassFile-File-Search
+# ClassFile-Searcher
 Search & dump class files stored arbitrarily in files.
 
 I've had to use this countless times - so I figured I would release a proper tool.
